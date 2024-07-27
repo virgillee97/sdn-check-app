@@ -2,6 +2,7 @@ import { FormValues } from "@/app/components/sdnForm/sdnForm";
 import { endpoint } from "../utils/endpoint";
 
 export async function checkCustomerWithSDN(values: FormValues) {
+  // Submit input data to backend endpoint
   const data = await fetch(`${endpoint}/sdn-screens`, {
     method: "POST",
     headers: {
@@ -15,7 +16,7 @@ export async function checkCustomerWithSDN(values: FormValues) {
   });
 
   if (!data.ok) {
-    throw new Error("Failed to fetch data");
+    throw new Error("Failed to submit data");
   }
 
   return data.json();

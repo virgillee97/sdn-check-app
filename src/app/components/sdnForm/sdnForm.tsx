@@ -1,12 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { Form, Input, Button, DatePicker, Select, Row, Col, Card } from "antd";
+import { Form, Input, Row, Col, notification } from "antd";
 import { FormInstance } from "antd/lib/form";
 import moment from "moment";
 import { Typography } from "antd";
 import { CheckCircleTwoTone, CloseCircleTwoTone } from "@ant-design/icons";
 import { checkCustomerWithSDN } from "../../../lib/sdn-screens";
+import {
+  DescriptionTitle,
+  FormSection,
+  ResetButton,
+  StyledCard,
+  StyledDatePicker,
+  SubmitButton,
+} from "./styles";
 
 // Define the form values interface
 const { Title, Paragraph } = Typography;
@@ -33,9 +41,15 @@ const SDNForm: React.FC = () => {
     !result?.isNameMatched;
 
   const onFinish = async (values: FormValues) => {
-    const res = await checkCustomerWithSDN(values);
-    setResult(res);
-    console.log("Success:", res);
+    try {
+      const res = await checkCustomerWithSDN(values);
+      setResult(res);
+    } catch (e) {
+      notification.error({
+        message:
+          "Sorry, we were not able to submit your request. Please try later.",
+      });
+    }
   };
 
   const onReset = () => {
@@ -56,10 +70,8 @@ const SDNForm: React.FC = () => {
 
   const renderDescriptionSection = () => {
     return (
-      <Card className="card-container">
-        <Title level={2} style={{ textAlign: "center" }}>
-          Welcome to SecureScreen
-        </Title>
+      <StyledCard>
+        <DescriptionTitle level={2}>Welcome to SecureScreen</DescriptionTitle>
         <Paragraph>
           SecureScreen helps businesses comply with regulations by quickly and
           accurately screening customers against the Specially Designated
@@ -80,17 +92,14 @@ const SDNForm: React.FC = () => {
           3. <strong>View Results:</strong> Review the results displayed below
           the form to see if the customer appears on the SDN list.
         </Paragraph>
-      </Card>
+      </StyledCard>
     );
   };
 
   const renderFormSection = () => {
     return (
-      <Card className="card-container">
-        <div
-          className="form-container"
-          style={{ padding: "24px 74px 24px 24px" }}
-        >
+      <StyledCard>
+        <FormSection>
           <Form
             form={form}
             name="basic"
@@ -119,7 +128,7 @@ const SDNForm: React.FC = () => {
                 { required: true, message: "Please input your date of birth!" },
               ]}
             >
-              <DatePicker
+              <StyledDatePicker
                 format="YYYY-MM-DD"
                 disabledDate={(current) => {
                   let customDate = moment().format("YYYY-MM-DD");
@@ -139,30 +148,22 @@ const SDNForm: React.FC = () => {
             </Form.Item>
 
             <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-              <Button
-                type="primary"
-                htmlType="submit"
-                style={{ marginRight: "10px", width: "129px" }}
-              >
+              <SubmitButton type="primary" htmlType="submit">
                 Submit
-              </Button>
-              <Button
-                type="primary"
-                htmlType="reset"
-                style={{ width: "129px" }}
-              >
+              </SubmitButton>
+              <ResetButton type="primary" htmlType="reset">
                 Reset
-              </Button>
+              </ResetButton>
             </Form.Item>
           </Form>
-        </div>
-      </Card>
+        </FormSection>
+      </StyledCard>
     );
   };
 
   const renderResultSection = () => {
     return (
-      <Card className="card-container">
+      <StyledCard>
         <div>
           <Row>
             <Col span={7}>
@@ -192,7 +193,7 @@ const SDNForm: React.FC = () => {
             <Col span={16}>{result && getIcon(result?.isCountryMatched)}</Col>
           </Row>
         </div>
-      </Card>
+      </StyledCard>
     );
   };
 

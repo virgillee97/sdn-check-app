@@ -1,4 +1,3 @@
-import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 
 interface SDNResult {
@@ -14,10 +13,16 @@ interface SDNResult {
   }[];
 }
 
-function buildResponseData(sdnResult: SDNResult) {
-  const matchFields = sdnResult?.matches[0]?.matchSummary?.matchFields;
+interface SearchFields {
+  fullName: string;
+  dob: string;
+  country: string;
+}
 
-  return matchFields.reduce(
+function buildResponseData(sdnResult: SDNResult) {
+  const matchFields = sdnResult?.matches?.[0]?.matchSummary?.matchFields || [];
+
+  const results = matchFields.reduce(
     (acc, cv) => {
       switch (cv.fieldName.toLowerCase()) {
         case "name":
@@ -40,42 +45,50 @@ function buildResponseData(sdnResult: SDNResult) {
       isCountryMatched: false,
     }
   );
+
+  return results;
+}
+
+async function verifyCustomerWithOFAC(
+  requestBody: SearchFields
+): Promise<SDNResult> {
+  const sdnRequestBody = {
+    apiKey: process.env.NEXT_PUBLIC_OFAC_API_KEY,
+    source: ["SDN"],
+    types: ["person"],
+    cases: [
+      {
+        name: requestBody.fullName,
+        dob: requestBody.dob,
+        address: { country: requestBody.country },
+      },
+    ],
+  };
+
+  const res = await fetch("https://api.ofac-api.com/v4/screen", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(sdnRequestBody),
+  });
+
+  const resData = await res.json();
+
+  return resData?.results[0];
 }
 
 export async function POST(req: any) {
   try {
-    const requestBody = await req.json();
+    const requestBody: SearchFields = await req.json();
 
-    console.log(requestBody);
-    const sdnRequestBody = {
-      apiKey: "d7d880d4-c45d-46ba-a4f5-0a0aefdff128",
-      source: ["SDN"],
-      types: ["person"],
-      cases: [
-        { name: "Abu Abbas" },
-        // {
-        //   name: requestBody.fullName,
-        //   dob: requestBody.dob,
-        //   nationality: requestBody.country,
-        // },
-      ],
-    };
-
-    const res = await fetch("https://api.ofac-api.com/v4/screen", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(sdnRequestBody),
-    });
-    const resData = await res.json();
-    console.log(resData.results);
-
-    const responseData = buildResponseData(resData.results[0]);
+    const resData = await verifyCustomerWithOFAC(requestBody);
+    const responseData = buildResponseData(resData);
 
     return NextResponse.json(responseData);
   } catch (error) {
-    console.log(error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return new NextResponse("Internal Server Error.", {
+      status: 500,
+    });
   }
 }

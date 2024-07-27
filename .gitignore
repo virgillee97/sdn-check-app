@@ -13,3 +13,5 @@ build/
 .sublime-workspace
 
 .next/
+
+.env
