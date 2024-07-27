@@ -20,6 +20,7 @@ interface SearchFields {
 }
 
 function buildResponseData(sdnResult: SDNResult) {
+  // Take the first match from the list, which has the highest score
   const matchFields = sdnResult?.matches?.[0]?.matchSummary?.matchFields || [];
 
   const results = matchFields.reduce(

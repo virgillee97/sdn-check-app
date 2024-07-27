@@ -1,12 +1,14 @@
 # SecureScreen
 
-SecureScreen is a web application designed to help businesses comply with regulatory requirements by screening customers against the Specially Designated Nationals (SDN) list. Using real-time data, SecureScreen ensures that transactions are safe and compliant by quickly identifying individuals or entities that are flagged by regulatory bodies.
+SecureScreen is a web application built with Next.js, designed to help businesses comply with regulatory requirements by screening customers against the Specially Designated Nationals (SDN) list. Using real-time data, SecureScreen ensures that transactions are safe and compliant by quickly identifying individuals or entities that are flagged by regulatory bodies.
 
 ## Features
 
 - **Quick Screening:** Fast and efficient verification of customer details against the SDN list.
 - **Real-Time Updates:** Always up-to-date with the latest SDN list to ensure accurate results.
 - **User-Friendly Interface:** Simple and intuitive interface designed with Ant Design (AntD) for ease of use.
+- **Next.js Integration:** Both frontend and backend are built with Next.js, leveraging its powerful features for a seamless experience.
+- **OFAC Endpoint Requests:** SecureScreen sends requests to OFAC endpoints to verify the given information against the SDN list.
 
 ## Access
 
