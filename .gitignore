@@ -1,0 +1,13 @@
+# Node modules directory
+node_modules/
+
+# Build directories
+dist/
+build/
+
+# Miscellaneous
+.DS_Store
+*.tgz
+*.gz
+.sublime-project
+.sublime-workspace
